@@ -61,6 +61,63 @@ class AKPlugin: NSObject, Plugin {
         }
     }
 
+    private var cursor: NSCursor?
+    public func setupCustomCursor(imageUrl: URL, size: CGSize, hotSpot: CGPoint) {
+        if let image = scaledImage(image: NSImage(contentsOfFile: imageUrl.path), to: size) {
+            self.cursor = NSCursor(image: image, hotSpot: hotSpot)
+
+            NSEvent.addLocalMonitorForEvents(matching: .mouseMoved, handler: { event in
+                self.updateCustomCursor()
+                return event
+            })
+            NotificationCenter.default.addObserver(
+                forName: NSApplication.didBecomeActiveNotification,
+                object: nil,
+                queue: .main) { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                        self.updateCustomCursor()
+                    }
+            }
+        }
+    }
+
+    private func updateCustomCursor() {
+        if let cursor = self.cursor {
+            if self.isMousePointInContentView() {
+                if NSCursor.current != cursor {
+                    cursor.set()
+                }
+            } else {
+                if NSCursor.current != NSCursor.arrow {
+                    NSCursor.arrow.set()
+                }
+            }
+        }
+    }
+
+    private func scaledImage(image: NSImage?, to size: NSSize) -> NSImage? {
+        guard let originalImage = image else {
+            return nil
+        }
+        if originalImage.size == size {
+            return originalImage
+        }
+        let newImage = NSImage(size: size)
+        newImage.lockFocus()
+        let originalRect = NSRect(origin: .zero, size: originalImage.size)
+        let targetRect = NSRect(origin: .zero, size: size)
+        originalImage.draw(in: targetRect, from: originalRect, operation: .sourceOver, fraction: 1.0)
+        newImage.unlockFocus()
+        return newImage
+    }
+
+    private func isMousePointInContentView() -> Bool {
+        guard let window = NSApplication.shared.windows.first else { return false }
+        if !window.isKeyWindow { return false }
+        guard let view = window.contentView else { return false }
+        return view.isMousePoint(window.mouseLocationOutsideOfEventStream, in: view.frame)
+    }
+
     func terminateApplication() {
         NSApplication.shared.terminate(self)
     }

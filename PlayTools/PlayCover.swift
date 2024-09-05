@@ -14,6 +14,7 @@ public class PlayCover: NSObject {
     @objc static public func launch() {
         quitWhenClose()
         AKInterface.initialize()
+        initializeCursor()
         PlayInput.shared.initialize()
         DiscordIPC.shared.initialize()
 
@@ -26,6 +27,18 @@ public class PlayCover: NSObject {
     @objc static public func initMenu(menu: NSObject) {
         guard let menuBuilder = menu as? UIMenuBuilder else { return }
         shared.menuController = MenuController(with: menuBuilder)
+    }
+
+    static private func initializeCursor() {
+        let bundleIdentifier = Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String ?? ""
+        let imageUrl = URL(fileURLWithPath: "/Users/\(NSUserName())/Library/Containers/io.playcover.PlayCover")
+            .appendingPathComponent("Cursors")
+            .appendingPathComponent("\(bundleIdentifier).png")
+        AKInterface.shared!.setupCustomCursor(
+            imageUrl: imageUrl,
+            size: CGSize(width: PlaySettings.shared.cursorWidth, height: PlaySettings.shared.cursorHeight),
+            hotSpot: CGPoint(x: PlaySettings.shared.cursorHotSpotX, y: PlaySettings.shared.cursorHotSpotY)
+        )
     }
 
     static public func quitWhenClose() {
