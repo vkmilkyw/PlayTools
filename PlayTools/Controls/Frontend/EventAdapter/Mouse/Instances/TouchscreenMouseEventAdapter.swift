@@ -71,6 +71,9 @@ public class TouchscreenMouseEventAdapter: MouseEventAdapter {
         // Otherwise, we don't know whether to return false or true
         guard let pos = TouchscreenMouseEventAdapter.cursorPos() else { return false }
         if pressed {
+            if !PlayInput.shared.isWindowActive {
+                return false
+            }
             return ActionDispatcher.dispatch(key: KeyCodeNames.fakeMouse, valueX: pos.x, valueY: pos.y)
         } else {
             return ActionDispatcher.dispatch(key: KeyCodeNames.fakeMouse, pressed: pressed)
