@@ -332,7 +332,7 @@ class GamepadThumbstickToKeyAction: Action {
     }
     // swiftlint:enable identifier_name
 
-    let deadZone = 0.2
+    let deadZone = 0.25
     let keyName: String
     private var buttons: [Direction: GamepadThumbstickButton]
     private var buttonNameToDirection: [String: Direction]
