@@ -11,7 +11,7 @@ import Foundation
 
 public class ModeAutomaton {
     static public func onOption() -> Bool {
-        if mode == .EDITOR || mode == .TEXT_INPUT {
+        if mode == .EDITOR || mode == .TEXT_INPUT || mode == .GAMEPAD_TO_KEY {
             return false
         }
         if mode == .OFF {
@@ -32,6 +32,9 @@ public class ModeAutomaton {
     }
 
     static public func onCmdK() {
+        if mode == .GAMEPAD_TO_KEY {
+            return
+        }
         guard settings.keymapping else {
             return
         }
@@ -59,6 +62,14 @@ public class ModeAutomaton {
         if mode == .EDITOR {
             return
         }
+        mode.set(.ARBITRARY_CLICK)
+    }
+
+    static public func onOpenGamepadToKeySetting() {
+        mode.set(.GAMEPAD_TO_KEY)
+    }
+
+    static public func onCloseGamepadToKeySetting() {
         mode.set(.ARBITRARY_CLICK)
     }
 }

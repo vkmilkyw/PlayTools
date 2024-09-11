@@ -87,6 +87,22 @@ public class ActionDispatcher {
                 actions.append(JoystickAction(data: joystick))
             }
         }
+
+        var thumbsticks: [String: GamepadThumbstickToKeyAction] = [:]
+        for joyToKey in keymap.keymapData.gamepadToKeyModels {
+            if let thumbstickName = joyToKey.thumbstickName {
+                var action = thumbsticks[thumbstickName]
+                if action == nil {
+                    action = GamepadThumbstickToKeyAction(keyName: thumbstickName)
+                    actions.append(action!)
+                    thumbsticks[thumbstickName] = action
+                }
+                action?.addButton(data: joyToKey)
+            } else {
+                actions.append(GamepadButtonToKeyAction(data: joyToKey))
+            }
+        }
+
         // `cursorHideNecessary` is used to disable `option` toggle when there is no mouse mapping
         // but in the case this new feature disabled, `option` should always function.
         // this variable is set here to be checked for mouse mapping later.

@@ -14,6 +14,7 @@ public class EventAdapters {
     static func keyboard(controlMode: ControlModeLiteral) -> KeyboardEventAdapter {
         switch controlMode {
         case .OFF: fallthrough
+        case .GAMEPAD_TO_KEY: fallthrough
         case .TEXT_INPUT:
             return TransparentKeyboardEventAdapter()
         case .CAMERA_ROTATE: fallthrough
@@ -35,6 +36,8 @@ public class EventAdapters {
             return TouchscreenMouseEventAdapter()
         case .EDITOR:
             return EditorMouseEventAdapter()
+        case .GAMEPAD_TO_KEY:
+            return GamepadToKeyMouseEventAdapter()
         }
     }
 
@@ -48,6 +51,8 @@ public class EventAdapters {
             return TouchscreenControllerEventAdapter()
         case .EDITOR:
             return EditorControllerEventAdapter()
+        case .GAMEPAD_TO_KEY:
+            return GamepadToKeyControllerEventAdapter()
         }
     }
 }

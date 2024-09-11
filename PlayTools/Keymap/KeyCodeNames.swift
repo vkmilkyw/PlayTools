@@ -7,6 +7,9 @@ class KeyCodeNames {
     public static let rightMouseButton = "RMB"
     public static let middleMouseButton = "MMB"
     public static let mouseMove = "Mouse"
+    public static let leftMouseButtonCode = -1
+    public static let rightMouseButtonCode = -2
+    public static let middleMouseButtonCode = -3
 
     // Internal used names, not stored to keymap
     public static let scrollWheelScale = "ScrollWheelScale"
@@ -284,4 +287,12 @@ extension KeyCodeNames {
         assert(keyCodes.count - 15 == mapVirtualToGc.count)
         return mapVirtualToGc
     }()
+
+    static func GCKeyCodeToVirtualCode(_ gcKeyCode: Int) -> UInt16? {
+        return KeyCodeNames.mapNSEventVirtualCodeToGCKeyCodeRawValue.first(where: { $0.value == gcKeyCode })?.key
+    }
+
+    static func isMouseButton(_ keyCode: Int) -> Bool {
+        return keyCode == leftMouseButtonCode || keyCode == rightMouseButtonCode || keyCode == middleMouseButtonCode
+    }
 }// Swift lint said the file was too long so removing the unused reverse mapping
