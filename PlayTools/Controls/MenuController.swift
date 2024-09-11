@@ -86,6 +86,11 @@ extension UIApplication {
             }
         }
     }
+
+    @objc
+    func openGamepadToKeySetting(_ sennder: AnyObject) {
+        GamepadToKeyController.shared.showSettingView()
+    }
 }
 
 extension UIViewController {
@@ -116,14 +121,17 @@ var keymapping = [
     NSLocalizedString("menu.keymapping.rotateDisplay", tableName: "Playtools",
                       value: "Rotate display area", comment: ""),
     NSLocalizedString("menu.keymapping.toggleDebug", tableName: "Playtools",
-                      value: "Toggle Debug Overlay", comment: "")
+                      value: "Toggle Debug Overlay", comment: ""),
+    NSLocalizedString("menu.keymapping.openGamepadToKeySetting", tableName: "Playtools",
+                      value: "Open Gamepad to Key Setting", comment: "")
   ]
 var keymappingSelectors = [#selector(UIApplication.switchEditorMode(_:)),
                            #selector(UIApplication.removeElement(_:)),
                            #selector(UIApplication.upscaleElement(_:)),
                            #selector(UIApplication.downscaleElement(_:)),
                            #selector(UIApplication.rotateView(_:)),
-                           #selector(UIApplication.toggleDebugOverlay(_:))
+                           #selector(UIApplication.toggleDebugOverlay(_:)),
+                           #selector(UIApplication.openGamepadToKeySetting(_:))
     ]
 
 class MenuController {
@@ -190,7 +198,7 @@ class MenuController {
 
     class func keymappingMenu() -> UIMenu {
         let keyCommands = [ "K", UIKeyCommand.inputDelete,
-                            UIKeyCommand.inputUpArrow, UIKeyCommand.inputDownArrow, "R", "D"]
+                            UIKeyCommand.inputUpArrow, UIKeyCommand.inputDownArrow, "R", "D", "U"]
         let arrowKeyChildrenCommands = zip(keyCommands, keymapping).map { (command, btn) in
             UIKeyCommand(title: btn,
                          image: nil,

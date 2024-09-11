@@ -275,6 +275,129 @@ class JoystickAction: Action {
     }
 }
 
+class GamepadButtonToKeyAction: Action {
+    let keyName: String
+    let targetKeyCode: Int
+    let targetModifiers: Int
+
+    init(keyName: String, targetKeyCode: Int, targetModifiers: Int) {
+        self.keyName = keyName
+        if let virtualCode = KeyCodeNames.GCKeyCodeToVirtualCode(targetKeyCode) {
+            self.targetKeyCode = Int(virtualCode)
+        } else {
+            self.targetKeyCode = targetKeyCode
+        }
+        self.targetModifiers = targetModifiers
+        ActionDispatcher.register(key: keyName, handler: self.update)
+    }
+
+    convenience init(data: GamepadToKey) {
+        self.init(
+            keyName: data.keyName,
+            targetKeyCode: data.targetKeyCode,
+            targetModifiers: data.targetModifiers)
+    }
+
+    func update(pressed: Bool) {
+        if pressed {
+            KeyboardAndMouse.postEvent(keyCode: targetKeyCode, modifiers: targetModifiers, keyDown: true)
+        } else {
+            KeyboardAndMouse.postEvent(keyCode: targetKeyCode, modifiers: targetModifiers, keyDown: false)
+        }
+    }
+
+    func invalidate() {
+        KeyboardAndMouse.postEvent(keyCode: targetKeyCode, modifiers: targetModifiers, keyDown: false)
+    }
+}
+
+class GamepadThumbstickToKeyAction: Action {
+    class GamepadThumbstickButton {
+        var keyCode: Int
+        var modifiers: Int
+        var pressState: Bool
+
+        init(keyCode: Int, modifiers: Int, pressState: Bool) {
+            self.keyCode = keyCode
+            self.modifiers = modifiers
+            self.pressState = pressState
+        }
+    }
+
+    // swiftlint:disable identifier_name
+    enum Direction: String, CaseIterable {
+        case left = "Left"
+        case right = "Right"
+        case up = "Up"
+        case down = "Down"
+    }
+    // swiftlint:enable identifier_name
+
+    let deadZone = 0.25
+    let keyName: String
+    private var buttons: [Direction: GamepadThumbstickButton]
+    private var buttonNameToDirection: [String: Direction]
+
+    init(keyName: String) {
+        self.keyName = keyName
+        self.buttons = [:]
+        self.buttonNameToDirection = [:]
+        for direction in Direction.allCases {
+            let buttonName = keyName + " " + direction.rawValue
+            self.buttonNameToDirection[buttonName] = direction
+        }
+        ActionDispatcher.register(key: keyName, handler: self.thumbstickUpdate)
+    }
+
+    func addButton(data: GamepadToKey) {
+        guard let direction = buttonNameToDirection[data.keyName] else {
+            return
+        }
+        var targetKeyCode: Int
+        if let virtualCode = KeyCodeNames.GCKeyCodeToVirtualCode(data.targetKeyCode) {
+            targetKeyCode = Int(virtualCode)
+        } else {
+            targetKeyCode = data.targetKeyCode
+        }
+        buttons[direction] = GamepadThumbstickButton(
+            keyCode: targetKeyCode,
+            modifiers: data.targetModifiers,
+            pressState: false
+        )
+    }
+
+    func buttonUpdate(direction: Direction, pressed: Bool) {
+        guard let button = buttons[direction] else {
+            return
+        }
+        if pressed {
+            if !button.pressState {
+                button.pressState = true
+                KeyboardAndMouse.postEvent(keyCode: button.keyCode, modifiers: button.modifiers, keyDown: true)
+            }
+        } else {
+            if button.pressState {
+                button.pressState = false
+                KeyboardAndMouse.postEvent(keyCode: button.keyCode, modifiers: button.modifiers, keyDown: false)
+            }
+        }
+    }
+
+    func thumbstickUpdate(_ deltaX: CGFloat, _ deltaY: CGFloat) {
+        buttonUpdate(direction: .left, pressed: deltaX < -deadZone)
+        buttonUpdate(direction: .right, pressed: deltaX > deadZone)
+        buttonUpdate(direction: .up, pressed: deltaY > deadZone)
+        buttonUpdate(direction: .down, pressed: deltaY < -deadZone)
+    }
+
+    func invalidate() {
+        for (_, button) in buttons {
+            KeyboardAndMouse.postEvent(keyCode: button.keyCode, modifiers: button.modifiers, keyDown: false)
+            button.pressState = false
+        }
+    }
+}
+
 class CameraAction: Action {
     var swipeMove, swipeScale1, swipeScale2: SwipeAction
     static var swipeDrag = SwipeAction(actionName: "Drag", keyName: "ScrollWheel")

@@ -240,4 +240,91 @@ class AKPlugin: NSObject, Plugin {
     func setMenuBarVisible(_ visible: Bool) {
         NSMenu.setMenuBarVisible(visible)
     }
+
+    func postKeyEvent(keyCode: UInt16, keyDown: Bool, useGlobalEvent: Bool) {
+        if useGlobalEvent {
+            postGlobalKeyEvent(keyCode: keyCode, keyDown: keyDown)
+        } else {
+            postLocalKeyEvent(keyCode: keyCode, keyDown: keyDown)
+        }
+    }
+
+    func postMouseEvent(keyCode: Int, keyDown: Bool, useGlobalEvent: Bool) {
+        if useGlobalEvent {
+            postGlobalMouseEvent(keyCode: keyCode, keyDown: keyDown)
+        } else {
+            postLocalMouseEvent(keyCode: keyCode, keyDown: keyDown)
+        }
+    }
+
+    private func postLocalKeyEvent(keyCode: UInt16, keyDown: Bool) {
+        if let keyEvent = NSEvent.keyEvent(
+            with: keyDown ? .keyDown : .keyUp,
+            location: .zero,
+            modifierFlags: [],
+            timestamp: 0,
+            windowNumber: NSApplication.shared.keyWindow?.windowNumber ?? 0,
+            context: nil,
+            characters: "",
+            charactersIgnoringModifiers: "",
+            isARepeat: false,
+            keyCode: keyCode) {
+            DispatchQueue.main.async {
+                NSApplication.shared.postEvent(keyEvent, atStart: false)
+            }
+        }
+    }
+
+    private func postLocalMouseEvent(keyCode: Int, keyDown: Bool) {
+        var eventType = NSEvent.EventType.leftMouseDown
+        if keyCode == -1 {
+            eventType = keyDown ? .leftMouseDown : .leftMouseUp
+        } else if keyCode == -2 {
+            eventType = keyDown ? .rightMouseDown : .rightMouseUp
+        } else if keyCode == -3 {
+            eventType = keyDown ? .otherMouseDown : .otherMouseUp
+        }
+        if let mouseEvent = NSEvent.mouseEvent(
+            with: eventType,
+            location: NSPoint(),
+            modifierFlags: [],
+            timestamp: 0,
+            windowNumber: NSApplication.shared.keyWindow?.windowNumber ?? 0,
+            context: nil,
+            eventNumber: 0,
+            clickCount: 1,
+            pressure: 1.0) {
+            DispatchQueue.main.async {
+                NSApplication.shared.postEvent(mouseEvent, atStart: false)
+            }
+        }
+    }
+
+    private func postGlobalKeyEvent(keyCode: UInt16, keyDown: Bool) {
+        let keyEvent = CGEvent(keyboardEventSource: nil, virtualKey: keyCode, keyDown: keyDown)
+        keyEvent?.post(tap: .cghidEventTap)
+    }
+
+    private func postGlobalMouseEvent(keyCode: Int, keyDown: Bool) {
+        var mouseButton = CGMouseButton.left
+        var mouseType = CGEventType.leftMouseDown
+        if keyCode == -1 {
+           mouseButton = .left
+           mouseType = keyDown ? .leftMouseDown : .leftMouseUp
+        } else if keyCode == -2 {
+           mouseButton = .right
+           mouseType = keyDown ? .rightMouseDown : .rightMouseUp
+        } else if keyCode == -3 {
+           mouseButton = .center
+           mouseType = keyDown ? .otherMouseDown : .otherMouseUp
+        }
+        let mousePosition = CGEvent(source: nil)?.location ?? CGPoint()
+        let mouseEvent = CGEvent(mouseEventSource: nil, mouseType: mouseType,
+                                mouseCursorPosition: mousePosition, mouseButton: mouseButton)
+        mouseEvent?.post(tap: .cghidEventTap)
+    }
+
+    func checkAccessibilityPermission() {
+        AXIsProcessTrusted()
+    }
 }

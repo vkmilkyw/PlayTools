@@ -31,4 +31,7 @@ public protocol Plugin: NSObjectProtocol {
     func setupScrollWheel(_ onMoved: @escaping (CGFloat, CGFloat) -> Bool)
     func urlForApplicationWithBundleIdentifier(_ value: String) -> URL?
     func setMenuBarVisible(_ value: Bool)
+    func postKeyEvent(keyCode: UInt16, keyDown: Bool, useGlobalEvent: Bool)
+    func postMouseEvent(keyCode: Int, keyDown: Bool, useGlobalEvent: Bool)
+    func checkAccessibilityPermission()
 }

@@ -69,6 +69,24 @@ struct KeymappingData: Codable {
     var draggableButtonModels: [Button] = []
     var joystickModel: [Joystick] = []
     var mouseAreaModel: [MouseArea] = []
+    var gamepadToKeyModels: [GamepadToKey] = []
+    var useGlobalEvent = false
     var bundleIdentifier: String
     var version = "2.0.0"
+
+    init(bundleIdentifier: String) {
+        self.bundleIdentifier = bundleIdentifier
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.bundleIdentifier = try container.decode(String.self, forKey: .bundleIdentifier)
+        self.buttonModels = try container.decodeIfPresent([Button].self, forKey: .buttonModels) ?? []
+        self.draggableButtonModels = try container.decodeIfPresent([Button].self, forKey: .draggableButtonModels) ?? []
+        self.joystickModel = try container.decodeIfPresent([Joystick].self, forKey: .joystickModel) ?? []
+        self.gamepadToKeyModels = try container.decodeIfPresent([GamepadToKey].self, forKey: .gamepadToKeyModels) ?? []
+        self.mouseAreaModel = try container.decodeIfPresent([MouseArea].self, forKey: .mouseAreaModel) ?? []
+        self.useGlobalEvent = try container.decodeIfPresent(Bool.self, forKey: .useGlobalEvent) ?? false
+        self.version = try container.decodeIfPresent(String.self, forKey: .version) ?? "0.0.0"
+    }
 }
