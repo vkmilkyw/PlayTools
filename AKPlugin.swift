@@ -113,7 +113,7 @@ class AKPlugin: NSObject, Plugin {
 
     private func isMousePointInContentView() -> Bool {
         guard let window = NSApplication.shared.windows.first else { return false }
-        if !window.isMainWindow { return false }
+        if !window.isKeyWindow { return false }
         guard let view = window.contentView else { return false }
         return view.isMousePoint(window.mouseLocationOutsideOfEventStream, in: view.frame)
     }
