@@ -251,7 +251,7 @@ class AKPlugin: NSObject, Plugin {
         if useGlobalEvent {
             postGlobalMouseEvent(keyCode: keyCode, keyDown: keyDown)
         } else {
-            postGlobalMouseEvent(keyCode: keyCode, keyDown: keyDown)
+            postLocalMouseEvent(keyCode: keyCode, keyDown: keyDown)
         }
     }
 
