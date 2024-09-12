@@ -18,6 +18,18 @@ public class TouchscreenMouseEventAdapter: MouseEventAdapter {
         if rect.width < 1 || rect.height < 1 {
             return nil
         }
+        if !screen.fullscreen {
+            // ignore touches on title bar
+            if point.y > rect.height - screen.titleHeight {
+                return nil
+            }
+            // allow resizing window by dragging window borders
+            let threshold = CGFloat(10)
+            if point.x < threshold || point.x > rect.width - threshold ||
+                point.y < threshold || point.y > rect.height - threshold {
+                return nil
+            }
+        }
         let viewRect: CGRect = screen.screenRect
         let widthRate = viewRect.width / rect.width
         var rate = viewRect.height / rect.height

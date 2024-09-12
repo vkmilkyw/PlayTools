@@ -114,7 +114,8 @@ public class PlayScreen: NSObject {
     }
 
     @objc public var screenRect: CGRect {
-        return UIScreen.main.bounds
+//        return UIScreen.main.bounds
+        return keyWindow?.bounds ?? CGRect()
     }
 
     var width: CGFloat {
@@ -155,6 +156,17 @@ public class PlayScreen: NSObject {
 
     var nsWindow: NSObject? {
         window?.nsWindow
+    }
+
+    private var _titleHeight: CGFloat?
+    var titleHeight: CGFloat {
+        if _titleHeight == nil {
+            let window = keyWindow?.nsWindow
+            let frameRect = window?.value(forKey: "frame") as? CGRect
+            let contentRect = window?.value(forKey: "contentLayoutRect") as? CGRect
+            _titleHeight = (frameRect?.height ?? 0) - (contentRect?.height ?? 0)
+        }
+        return _titleHeight!
     }
 
     func switchDock(_ visible: Bool) {
