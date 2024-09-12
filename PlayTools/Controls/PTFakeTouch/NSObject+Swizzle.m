@@ -171,6 +171,7 @@ bool menuWasCreated = false;
 
 @implementation PTSwizzleLoader
 + (void)load {
+    /*
     // This might need refactor soon
     if(@available(iOS 16.3, *)) {
         if ([[PlaySettings shared] adaptiveDisplay]) {
@@ -241,6 +242,7 @@ bool menuWasCreated = false;
                 [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_size)];
             }
     }
+     */
     
     [objc_getClass("_UIMenuBuilder") swizzleInstanceMethod:sel_getUid("initWithRootMenu:") withMethod:@selector(initWithRootMenuHook:)];
     [objc_getClass("IOSViewController") swizzleInstanceMethod:@selector(prefersPointerLocked) withMethod:@selector(hook_prefersPointerLocked)];
