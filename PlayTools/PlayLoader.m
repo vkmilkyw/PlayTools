@@ -103,7 +103,7 @@ static int pt_sysctlbyname(const char *name, void *oldp, size_t *oldlenp, void *
 }
 
 // Interpose the functions create the wrapper
-DYLD_INTERPOSE(pt_dyld_get_active_platform, dyld_get_active_platform)
+//DYLD_INTERPOSE(pt_dyld_get_active_platform, dyld_get_active_platform)
 DYLD_INTERPOSE(pt_uname, uname)
 DYLD_INTERPOSE(pt_sysctlbyname, sysctlbyname)
 DYLD_INTERPOSE(pt_sysctl, sysctl)
