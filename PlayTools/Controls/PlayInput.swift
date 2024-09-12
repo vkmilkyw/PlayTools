@@ -41,11 +41,11 @@ class PlayInput {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 5, qos: .utility) {
+            mode.initialize()
             if mode.cursorHidden() || !ActionDispatcher.cursorHideNecessary {
                 return
             }
             Toast.initialize()
         }
-        mode.initialize()
     }
 }
