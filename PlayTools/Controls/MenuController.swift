@@ -89,7 +89,7 @@ extension UIApplication {
 
     @objc
     func openGamepadToKeySetting(_ sennder: AnyObject) {
-        GameToKeyController.shared.showSettingView()
+        GamepadToKeyController.shared.showSettingView()
     }
 }
 

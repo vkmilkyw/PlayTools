@@ -7,8 +7,8 @@
 
 import Foundation
 
-class GameToKeyController {
-    static let shared = GameToKeyController()
+class GamepadToKeyController {
+    static let shared = GamepadToKeyController()
     let lock = NSLock()
     var gameToKeyWindow: UIWindow?
     weak var previousWindow: UIWindow?
