@@ -71,6 +71,7 @@ struct KeymappingData: Codable {
     var mouseAreaModel: [MouseArea] = []
     var gamepadToKeyModels: [GamepadToKey] = []
     var useGlobalEvent = false
+    var enableGamepadFakeCursor = false
     var bundleIdentifier: String
     var version = "2.0.0"
 
@@ -87,6 +88,7 @@ struct KeymappingData: Codable {
         self.gamepadToKeyModels = try container.decodeIfPresent([GamepadToKey].self, forKey: .gamepadToKeyModels) ?? []
         self.mouseAreaModel = try container.decodeIfPresent([MouseArea].self, forKey: .mouseAreaModel) ?? []
         self.useGlobalEvent = try container.decodeIfPresent(Bool.self, forKey: .useGlobalEvent) ?? false
+        self.enableGamepadFakeCursor = try container.decodeIfPresent(Bool.self, forKey: .enableGamepadFakeCursor) ?? false
         self.version = try container.decodeIfPresent(String.self, forKey: .version) ?? "0.0.0"
     }
 }
