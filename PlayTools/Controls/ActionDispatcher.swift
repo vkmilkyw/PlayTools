@@ -50,6 +50,10 @@ public class ActionDispatcher {
 
         actions.append(FakeMouseAction())
 
+        if keymap.keymapData.enableCustomCameraScale {
+            actions.append(CustomCameraScaleAction())
+        }
+
         // current keymap version is 2.0.x.
         // in future, keymap format will be upgraded.
         // PlayTools would maintain limited backwards compatibility.
