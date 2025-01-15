@@ -19,6 +19,8 @@ class Keymapping {
             encode()
         }
     }
+    var keymapId = 1
+    var maxKeymapId = 1
 
     init() {
         keymapUrl = URL(fileURLWithPath: "/Users/\(NSUserName())/Library/Containers/io.playcover.PlayCover")
@@ -37,6 +39,14 @@ class Keymapping {
         keymapData = KeymappingData(bundleIdentifier: bundleIdentifier)
         if !decode() {
             encode()
+        }
+
+        for id in 2...100 {
+            if FileManager.default.fileExists(atPath: makeFileURL(for: id).path) {
+                maxKeymapId = id
+            } else {
+                break
+            }
         }
     }
 
@@ -61,6 +71,37 @@ class Keymapping {
             print("[PlayTools] Keymapping decode failed.\n%@")
             return false
         }
+    }
+
+    func switchToPrevious() {
+        let previousId = keymapId - 1 > 0 ? keymapId - 1 : maxKeymapId
+        switchToKeymapping(id: previousId)
+    }
+
+    func switchToNext() {
+        let nextId = keymapId + 1 <= maxKeymapId ? keymapId + 1 : 1
+        switchToKeymapping(id: nextId)
+    }
+
+    func switchToKeymapping(id: Int) {
+        let url = makeFileURL(for: id)
+        if !FileManager.default.fileExists(atPath: url.path) {
+            return
+        }
+        if keymapId != id {
+            keymapId = id
+            keymapUrl = url
+            if !decode() {
+                encode()
+            }
+        }
+    }
+
+    func makeFileURL(for id: Int) -> URL {
+        let postfix = id == 1 ? "" : ".\(id)"
+        return URL(fileURLWithPath: "/Users/\(NSUserName())/Library/Containers/io.playcover.PlayCover")
+            .appendingPathComponent("Keymapping")
+            .appendingPathComponent("\(bundleIdentifier)\(postfix).plist")
     }
 }
 
